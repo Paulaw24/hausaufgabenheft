@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hausaufgabenheft</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5d5e3 0%, #e8c5d8 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.5em;
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: 0.8fr 1fr 1.5fr 0.9fr;
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .input-section {
+                grid-template-columns: 0.7fr 0.9fr 1.2fr 0.85fr;
+                gap: 6px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .input-section {
+                grid-template-columns: 0.6fr 0.8fr 1fr 0.8fr;
+                gap: 4px;
+            }
+        }
+
+        select {
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            background-color: white;
+            min-width: 0;
+        }
+
+        @media (max-width: 600px) {
+            select {
+                padding: 8px 10px;
+                font-size: 0.9em;
+            }
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #f4a6c1;
+            box-shadow: 0 0 0 3px rgba(244, 166, 193, 0.2);
+        }
+
+        input {
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            min-width: 0;
+        }
+
+        @media (max-width: 600px) {
+            input {
+                padding: 8px 10px;
+                font-size: 0.9em;
+            }
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #f4a6c1;
+            box-shadow: 0 0 0 3px rgba(244, 166, 193, 0.2);
+        }
+
+        #aufgabenInput {
+            grid-column: 3;
+        }
+
+        #fachInput {
+            grid-column: 2;
+        }
+
+        #wochentag {
+            grid-column: 1;
+        }
+
+        @media (max-width: 600px) {
+            #aufgabenInput {
+                grid-column: 1;
+            }
+            #fachInput {
+                grid-column: 1;
+            }
+            #wochentag {
+                grid-column: 1;
+            }
+        }
+
+        button {
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #f4a6c1 0%, #e88ba3 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            grid-column: 4;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 900px) {
+            button {
+                padding: 9px 14px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 600px) {
+            button {
+                grid-column: 1;
+                padding: 8px 12px;
+                font-size: 0.85em;
+            }
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(244, 166, 193, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .tasks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: #fdf3f8;
+            border-radius: 12px;
+            border-left: 4px solid #f4a6c1;
+            transition: all 0.3s ease;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .task-item:hover {
+            background: #f0f1f5;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
+            border-left-color: #4caf50;
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: #f4a6c1;
+            flex-shrink: 0;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .task-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .task-text {
+            font-size: 1.05em;
+            color: #333;
+            margin-bottom: 4px;
+            word-break: break-word;
+        }
+
+        .task-subject {
+            font-size: 0.85em;
+            color: #999;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .delete-btn {
+            padding: 8px 12px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .delete-btn:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-text {
+            font-size: 1.1em;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .stat {
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #f4a6c1;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .weekday-section {
+            margin-bottom: 25px;
+        }
+
+        .weekday-header {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #d4697a;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f4a6c1;
+        }
+
+        .weekday-tasks {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Hausaufgabenheft</h1>
+        
+        <div class="input-section">
+            <select id="wochentag">
+                <option value="Montag">Montag</option>
+                <option value="Dienstag">Dienstag</option>
+                <option value="Mittwoch">Mittwoch</option>
+                <option value="Donnerstag">Donnerstag</option>
+                <option value="Freitag">Freitag</option>
+                <option value="Samstag">Samstag</option>
+                <option value="Sonntag">Sonntag</option>
+            </select>
+            <input 
+                type="text" 
+                id="fachInput" 
+                placeholder="Fach (z.B. Mathe...)"
+            >
+            <input 
+                type="text" 
+                id="aufgabenInput" 
+                placeholder="Aufgabe eingeben..."
+            >
+            <button onclick="aufgabeHinzufuegen()">Hinzufügen</button>
+        </div>
+
+        <div id="tasksList" class="tasks-list">
+            <div class="empty-state">
+                <div class="empty-state-icon">✨</div>
+                <div class="empty-state-text">Keine Aufgaben. Zeit zum Lernen!</div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number" id="totalCount">0</div>
+                <div class="stat-label">Gesamt</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="completedCount">0</div>
+                <div class="stat-label">Erledigt</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="pendingCount">0</div>
+                <div class="stat-label">Offen</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let aufgaben = [];
+        const API_URL = '/api/aufgaben';
+
+        // Aufgaben vom Server laden
+        async function aufgabenLaden() {
+            try {
+                const response = await fetch(API_URL);
+                if (response.ok) {
+                    aufgaben = await response.json();
+                } else {
+                    // Fallback auf localStorage wenn Server nicht verfügbar
+                    const gespeichert = localStorage.getItem('aufgaben');
+                    if (gespeichert) {
+                        aufgaben = JSON.parse(gespeichert);
+                    }
+                }
+            } catch (error) {
+                console.error('Konnte nicht vom Server laden:', error);
+                // Fallback auf localStorage
+                const gespeichert = localStorage.getItem('aufgaben');
+                if (gespeichert) {
+                    aufgaben = JSON.parse(gespeichert);
+                }
+            }
+            anzeigen();
+        }
+
+        // Aufgaben auf Server speichern
+        function aufgabenSpeichern() {
+            // Auch lokal speichern als Backup
+            localStorage.setItem('aufgaben', JSON.stringify(aufgaben));
+        }
+
+        // Aufgabe hinzufügen
+        async function aufgabeHinzufuegen() {
+            const wochentagSelect = document.getElementById('wochentag');
+            const fachInput = document.getElementById('fachInput');
+            const aufgabenInput = document.getElementById('aufgabenInput');
+            
+            const wochentag = wochentagSelect.value;
+            const fach = fachInput.value.trim();
+            const aufgabe = aufgabenInput.value.trim();
+
+            if (!fach || !aufgabe) {
+                alert('Bitte fülle alle Felder aus!');
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        wochentag,
+                        fach,
+                        aufgabe,
+                        erledigt: false
+                    })
+                });
+
+                if (response.ok) {
+                    const newAufgabe = await response.json();
+                    aufgaben.push(newAufgabe);
+                    aufgabenSpeichern();
+                    fachInput.value = '';
+                    aufgabenInput.value = '';
+                    fachInput.focus();
+                    anzeigen();
+                }
+            } catch (error) {
+                console.error('Fehler beim Hinzufügen:', error);
+                alert('Konnte Aufgabe nicht speichern');
+            }
+        }
+
+        // Aufgabe als erledigt markieren
+        async function toggleErledigt(id) {
+            const aufgabe = aufgaben.find(a => a.id === id);
+            if (aufgabe) {
+                try {
+                    const response = await fetch(`${API_URL}/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            erledigt: !aufgabe.erledigt
+                        })
+                    });
+
+                    if (response.ok) {
+                        aufgabe.erledigt = !aufgabe.erledigt;
+                        aufgabenSpeichern();
+                        anzeigen();
+                    }
+                } catch (error) {
+                    console.error('Fehler beim Aktualisieren:', error);
+                }
+            }
+        }
+
+        // Aufgabe löschen
+        async function aufgabeLoschen(id) {
+            try {
+                const response = await fetch(`${API_URL}/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    aufgaben = aufgaben.filter(a => a.id !== id);
+                    aufgabenSpeichern();
+                    anzeigen();
+                }
+            } catch (error) {
+                console.error('Fehler beim Löschen:', error);
+                alert('Konnte Aufgabe nicht löschen');
+            }
+        }
+
+        // Aufgaben anzeigen
+        function anzeigen() {
+            const tasksList = document.getElementById('tasksList');
+            
+            if (aufgaben.length === 0) {
+                tasksList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✨</div>
+                        <div class="empty-state-text">Keine Aufgaben. Zeit zum Lernen!</div>
+                    </div>
+                `;
+                statistikAktualisieren();
+                return;
+            }
+
+            const wochentage = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+            let html = '';
+
+            wochentage.forEach(tag => {
+                const aufgabenFuerTag = aufgaben.filter(a => a.wochentag === tag);
+                
+                if (aufgabenFuerTag.length > 0) {
+                    html += `
+                        <div class="weekday-section">
+                            <div class="weekday-header">${tag}</div>
+                            <div class="weekday-tasks">
+                                ${aufgabenFuerTag.map(aufgabe => `
+                                    <div class="task-item ${aufgabe.erledigt ? 'completed' : ''}">
+                                        <input 
+                                            type="checkbox" 
+                                            ${aufgabe.erledigt ? 'checked' : ''}
+                                            onchange="toggleErledigt(${aufgabe.id})"
+                                        >
+                                        <div class="task-content">
+                                            <div class="task-text">${escapeHtml(aufgabe.aufgabe)}</div>
+                                            <div class="task-subject">${escapeHtml(aufgabe.fach)}</div>
+                                        </div>
+                                        <button class="delete-btn" onclick="aufgabeLoschen(${aufgabe.id})">
+                                            Löschen
+                                        </button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            tasksList.innerHTML = html;
+            statistikAktualisieren();
+        }
+
+        // Statistik aktualisieren
+        function statistikAktualisieren() {
+            const total = aufgaben.length;
+            const completed = aufgaben.filter(a => a.erledigt).length;
+            const pending = total - completed;
+
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('pendingCount').textContent = pending;
+        }
+
+        // HTML escapen für Sicherheit
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Enter-Taste zum Hinzufügen
+        document.getElementById('aufgabenInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                aufgabeHinzufuegen();
+            }
+        });
+
+        document.getElementById('fachInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                aufgabeHinzufuegen();
+            }
+        });
+
+        // Beim Laden der Seite
+        aufgabenLaden();
+    </script>
+</body>
+</html>
